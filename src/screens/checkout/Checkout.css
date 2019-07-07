@@ -1,0 +1,15 @@
+.address-format {
+    display:flex;
+    text-align: start;
+
+}
+.address-tile {
+    cursor: pointer;
+    border-block-end-color: lightcoral;
+
+  }
+  .save-address-form {
+      display:flex;
+      flex-direction: column;
+      align-items: flex-start;
+  }

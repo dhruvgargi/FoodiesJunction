@@ -1,0 +1,33 @@
+
+  
+  #star-icon {
+    color:white;
+}
+
+#left-button {
+    float:left;
+    color:white;
+}
+
+#right-avg-price{
+    float:right;
+}
+
+#last-row{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    float:bottom;
+}
+
+button#left-button {
+    background-color:#ffdb58;
+}
+/*#media {
+    width:'450px';
+    height:'200px';
+}*/
+.MuiPaper-root.MuiPaper-elevation1.MuiCard-root.makeStyles-card-176.MuiPaper-rounded {
+    width:auto;
+    height: auto;
+}

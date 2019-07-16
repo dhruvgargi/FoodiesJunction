@@ -1,142 +1,140 @@
-.restaurant-info {
-    height: 10%;
-    background-color: #d9d9d9;
+.flex-container{
     display: flex;
     flex-direction: row;
-    
-}
-
-.restaurant-image{
-    display: flex;
-    flex-direction: row;
-    padding: 2%;
-}
-
-.restaurant-img{
-    height: 200px;
-    width: auto;
-}
-
-.restaurant-details{
-    display: flex;
-    flex-direction: column;
-    padding: 2%;
-    width: auto;
-    max-width: 100%;
-}
-
-.restaurant-rating-price{
-    display: flex;
-    flex-direction: row;
-    width: auto;
-}
-
-.User-rating{
-    display: flex;
-    flex-direction: column;
-    width: auto;
-    max-width: 60%;
-}
-
-.details-rating-price{
-    font-weight: 500;
-    font-size: 18px;
-    width:auto;
-    padding-left: 4px;
-}
-
-.usersRated{
-    text-decoration: lightgray;
-    font-weight: bold;
-}
-
-.restaurant-pricing{
-    padding-top: 4px;
-    padding-left: 50%;
-    width: auto;
-}
-
-.details-price{
-    display: flex;
-    flex-direction: row;
-}
-
-/*--------------------------------------------*/
-.restaurant-menu-items{
-    padding: 50px;
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
-    align-items: top;
-}
-
-.menu-items{
-    width: 50%;
-}
-
-.CategoryName{
-    text-transform: uppercase;
-    font-weight: normal;
-}
-
-.Category-items{
-    display: flex;
-    align-items: baseline;
    
 }
 
-.item{
-    font-size: 18px;
-    min-width: 75%;
-}
-
-.veg-item-color{
-    color: green;
-}
-
-.non-veg-item-color{
-    color: red;
-}
-
-.item-price{
-   min-width: 50px;
-}
-
-.item-add{
-  margin-left: 20px;
-}
-
-/*-------------------------------*/
-.my-cart{
-    float: right;
-    width: 700px;
-    margin-left: 80px;
+.left-container{
+    width: 50%;
+    margin-left: 10px;
+    margin-right: 10px;
     
 }
-
-.added-item{
-    min-width: 43%;
+.right-container{
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 50%;
 }
-
-.badge{
-    margin: -0.25;
-    z-index: 0;
+.up-container{
+    height: 284px;
+    width:269.4;
+    background-color: rgb(204, 201, 201);
+    display: flex;
+    flex-direction: row;
+    
 }
+.img-container{
+    margin-left: 24px;
+    margin-top: 27px;
+    padding-left:20px; 
 
-
-.card{
+}
+.info-container{
+    display:flex;
+    flex-direction: column;
+    height:218px;
+    flex:none;
+    width:790px;
+    margin-left: 84px;
+    margin-top: 15px;
+}
+.address-container{
+    margin-top: -25px;
+    font-weight: 600; 
+}
+.avg-rating-price{
+    margin-top: -17px;
     padding: 10px;
 }
-
-.cart-button {
-   width: 100%;
+.resrating{
+    position: relative;
+    
+}
+.rating{
+    position:absolute ;
+    padding-left:5px;
+    padding-top: 2px;
+}
+.avg-prices{
+    padding-left:200px; 
+}
+.avg-rating-price{
+    display:flex;
+    flex-direction: row;
+    flex:none;
+    width:290px;
+    height:86px
+}
+.avg-rating{
+    display: flex;
+    flex-direction: column;
+    flex:none;
+    width:290px;
+    height:86px;
+}
+.avg-price{
+    display: flex;
+    flex:none;
+    flex-direction: column;
+    margin-left: 172px;
 }
 
-.item-total{
-    font-weight: 700;
+@media (max-width: 992px) {
+    .flex-container {
+        flex-direction: column;
+    }
+    .left-container {
+        width: 100%;
+    }
+    .right-container {
+        width: 100%;
+    }
+    .up-container{
+        flex-direction: column;
+        height: 600px;
+        width:269.4;
+    }
 }
-
-.item-rupee{
-    float: right;
-    margin-right: 20px;
+ @media only screen and (max-width: 600px) {
+    .up-container{
+        flex-direction: column;
+        height: 500px;
+        width:269.4;
+    }
+    .img-container{
+        text-align: center;
+    }
+    .res-name{
+        margin-top:-20px; 
+        padding-left:150px; 
+    }
+    .avg-price{
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        /* margin-left:-300px; 
+        margin-top:45px;  */
+    }
+    .avg-prices{
+        width: 100%;
+    }
+  
+    .address-container{
+        padding-left:150px; 
+        margin-top:-35px;  
+    }
+    .catagory-container{
+        padding-left:40px; 
+        margin-top:-35px;  
+    }
+    .resrating{
+        padding-left:60px; 
+        margin-top:10px; 
+    }
+   .ratingComment{
+    width: 200px;
+    }
+    .ratingText{
+        font-size: 12px;
+    }
 }

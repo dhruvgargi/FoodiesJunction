@@ -20,7 +20,11 @@ export const DisplayClassname = Object.freeze({
   DISPLAY_BLOCK: "dispBlock"
 });
 
+export const CartButtonAction = Object.freeze({
+  ADD: +1,
+  REMOVE: -1
+});
+
 /* constants */
 
 export const LOGIN_CREDENTIALS_ERROR_MSG = "Invalid credentials!";
-export const VALIDATE_CONTACT_ERROR_MSG ="Invalid Contact";

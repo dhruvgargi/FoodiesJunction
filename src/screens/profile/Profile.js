@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import Header from '../../common/header/Header';
 
-class Profile extends Component {
-    render() {
+class Profile extends Component{
+
+    render(){
         return (
-        <div>
-            This is Profile Page
-        </div>
+            <div>
+                <Header baseUrl={this.props.baseUrl} showSearch={false} history={this.props.history} />
+                <div>Profile Page</div>
+            </div>
         )
     }
 }

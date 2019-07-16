@@ -1,33 +1,17 @@
-
-  
-  #star-icon {
-    color:white;
+.rating-bg-color{
+    background-color: #FFCC00;    
+    color: white;
+    padding: 4px 4px 4px 5px;
+    white-space: nowrap;
 }
 
-#left-button {
-    float:left;
-    color:white;
-}
-
-#right-avg-price{
-    float:right;
-}
-
-#last-row{
-    display:flex;
+.rating-main-contnr{
+    display: flex;
+    justify-content:space-between;
     flex-direction: row;
-    justify-content: space-between;
-    float:bottom;
 }
 
-button#left-button {
-    background-color:#ffdb58;
-}
-/*#media {
-    width:'450px';
-    height:'200px';
-}*/
-.MuiPaper-root.MuiPaper-elevation1.MuiCard-root.makeStyles-card-176.MuiPaper-rounded {
-    width:auto;
-    height: auto;
+.avg-price{
+    padding: 4px 4px 4px 5px;
+    margin-left: auto;
 }

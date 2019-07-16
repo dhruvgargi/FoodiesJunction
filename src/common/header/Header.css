@@ -1,68 +1,46 @@
-/*  grey Header & Header containers for logo, searchbox, login button &  user profile    */
 .header-main-container {
-    background-color:#A9A9A9;
-    height: 36px;
-    padding: 8px 32px 8px 16px;
-    display: flex;
-    margin-bottom: 16px;
-    justify-content: space-between;
+  background-color: #263238;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
 }
-.header-logo-container, .header-search-container, .header-login-btn-container, .header-user-profile-container {
+
+.header-logo-container, .header-search-container, .header-upload-btn-container, .header-profile-btn-container {
   align-self: center;
 }
 
-/* fastfood logo css */
-.fastfood-icon-container {
-    float: left;
-    color:white;
+.logo {
+  color: #fff;
+  font-size: 18px;
+  text-decoration: none;
 }
 
-/* searchBox */
-.search-icon-container {
-    display: flex;
-    border-radius: 4px;
-    width:300px;
+.header-search-container {
+  display: flex;
+  background: #263238;
+  border-radius: 4px;
+  width: 300px;
+  margin-right: 16px;
+  padding: 4px;
+  height: 50%;
 }
+
 .search-icon {
+  padding: 0 7px;
   align-self: center;
-  color:white;
-}
-#search-input {
-    color:white;
-}
-.search-text-input {
-  padding: 0px 4px 4px 0px;
-  font-size: 15px;
-  width:300px;
-  
-}
-.MuiInputBase-root.MuiInput-root.MuiInput-underline {
-  width: 250px;
-  color: black;
-  
 }
 
-/*  account circle icon having a padding on right   */
-.accountCircle-logo {
-  padding-right: 6%;
+.image-preview-container {
+  padding: 15px 0;
+  text-align: center;
 }
 
-/*  login button to float right  
-
-.login-button-container {
-    float: right;
-}*/
-
-/* user profile icon */
-#user-profile {
-  display:flex;
-  flex-direction: row;
+.image-preview {
+  max-height: 250px;
+  max-width: 250px;
 }
-#user-right {
-  color: darkslategrey;
-  float:right;
-}
-/*css for user profile menu drop down */
+
 .user-profile-drop-down {
   position: absolute;
   right: 16px;
@@ -72,48 +50,33 @@
   margin-top: 3px;
   display: block;
 }
+
 .my-account-dropdown-menu-item, .logout-dropdown-menu-item {
   text-decoration: none;
   color: #000;
   cursor: pointer;
 }
 
-/*css for login-signup tabs in modal */
-.tabs {
-  margin: 20px;
+.red
+{
+    color: red;
 }
 
-/*css to make the header responsive */
-
-@media (max-width:600px) {
-    header {
-        flex-direction: column;
-        height: 100%;
-    }
-    .app-header-container {
-        background-color: grey;
-        height: 100%;
-    }
-    .search-icon-container {
-        float: left;
-    }
+.dispNone{
+  display:none;
 }
 
-  .user-profile-drop-down {
-    position: absolute;
-    right: 16px;
-    background: #dfdfdf;
-    padding: 16px;
-    border-radius: 6px;
-    margin-top: 3px;
-    display: block;
+.dispBlock {
+  display: block;
+}
+/* @media (max-width: 992px) {
+  .flexHeader {
+    flex-direction: column;
   }
-  
-  .my-account-dropdown-menu-item, .logout-dropdown-menu-item {
-    text-decoration: none;
-    color: #000;
-    cursor: pointer;
+  .flexHeaderNoLink {
+    flex-direction: column;
   }
-    
-
-  /* All the css in header  is checked  */
+  .headerPadding {
+    height: 64px;
+  }
+} */

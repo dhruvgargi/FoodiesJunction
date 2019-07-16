@@ -93,7 +93,7 @@ export const makeApiCall = (
     buildUrlWithParameters(requestUrl, urlParametersObj)
   );
   if (!isUndefinedOrNull(requestHeadersObj)) {
-    for (let key in requestHeadersObj) {
+    for (let key in requestHeadersObj) {      
       if (!isUndefinedOrNullOrEmpty(requestHeadersObj[key])) {
         xhr.setRequestHeader(key, requestHeadersObj[key]);
       }
@@ -117,4 +117,16 @@ export const makeApiCall = (
   });
 };
 
-
+/**
+ * Function to format date
+ * @param time time in seconds
+ * @returns formatted date
+ * @memberof Profile
+ */
+export const formatDate = time => {
+  return (
+    new Date(time * 1000).toLocaleDateString() +
+    " " +
+    new Date(time * 1000).toLocaleTimeString()
+  );
+};

@@ -1,607 +1,403 @@
-import React, { Component } from 'react';
-import './Header.css';
-//import * as Utils from "../../common/Utils";
-import * as UtilsUI from "../../common/UtilsUI";
-import * as Constants from "../../common/Constants";
-import { Link } from "react-router-dom";
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
+import React, { Component } from "react";
+import "./Header.css";
+import * as Constants from "../Constants";
+import * as Utils from "../Utils";
+import * as UtilsUI from "../UtilsUI";
+import Fastfood from '@material-ui/icons/Fastfood';
+import SearchIcon from "@material-ui/icons/Search";
+import { withStyles } from '@material-ui/core/styles';
 import Modal from 'react-modal';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import { withStyles } from "@material-ui/core/styles";
+import Input from "@material-ui/core/Input";
+import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import accountCircle from '../../assets/icon/accountCircle.svg';
-import FastFoodIcon from '@material-ui/icons/Fastfood';
-import SearchIcon from '@material-ui/icons/Search';
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
+import { Link } from 'react-router-dom';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Popper from '@material-ui/core/Popper';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
-// custom styles for upload modal
+
 const customStyles = {
-    content: {
-        top: "50%",
-        left: "50%",
-        right: "auto",
-        bottom: "auto",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)"
-    }
-};
-
-/**
- * Functional component for displaying Tab components
- * @param props properties passed by parent component to child component
- */
+  content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)'
+  }
+}
+const styles = {
+  root: {
+    color: "#FFFFFF"
+  },
+  searchInput: {
+    width: "80%",
+    color:"white"
+  },
+  icon: {
+    color: '#FFFFFF',
+    fontSize: 32,
+  },
+  formControl:{
+    width:"90%"
+  }
+}
 const TabContainer = function (props) {
-    return (
-        <Typography component="div" style={{ padding: 0, textAlign: 'center' }}>
-            {props.children}
-        </Typography>
-    )
+  return (
+      <Typography component="div" style={{ padding: 0, textAlign: 'center' }}>
+          {props.children}
+      </Typography>
+  );
 }
 
 TabContainer.propTypes = {
-    children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired
 }
 
-// inline styles for Material-UI components
-const styles = {
-    searchInput: {
-        width: "80%",
-    }
+class Header extends Component 
+{  
+constructor(){
+  super();
+  this.state = {
+    modalIsOpen: false,
+    value : 0,     
+    username: "",    
+    password: "",
+    email: "",
+    firstname: "",
+    lastname: "",
+    mobile: "",
+    passwordReg: "",
+    usernameRequired: "dispNone",
+    passwordRequired: "dispNone",
+    loginError:"dispNone",
+    signupError:"dispNone",
+    emailRequired: "dispNone",
+    firstnameRequired: "dispNone",
+    lastnameRequired: "dispNone",
+    mobileRequired: "dispNone",
+    passwordRegRequired: "dispNone",
+    registrationSuccess: false,    
+    loginErrorMsg : "",
+    signUpErrorMsg : "",    
+    loggedIn: sessionStorage.getItem('access-token') == null ? false : true,
+    showUserProfileDropDown:false,
+    open:false,
+    anchorEl:null,
+    snackBarOpen:false
+  }
+}
+
+inputUsernameChangeHandler = (e) => {
+  this.setState({ username: e.target.value })
+}
+
+inputPasswordChangeHandler = (e) => {
+  this.setState({ password: e.target.value })
+}
+
+inputEmailChangeHandler = (e) => {
+  this.setState({ email: e.target.value })  
+}
+
+inputFirstnameChangeHandler = (e) => {
+  this.setState({ firstname: e.target.value })
+
+}
+
+inputLastnameChangeHandler = (e) => {
+  this.setState({ lastname: e.target.value })
+
+}
+
+inputMobileChangeHandler = (e) => {
+  this.setState({ mobile: e.target.value })
+
+}
+
+inputPasswordRegChangeHandler = (e) => {
+  this.setState({ passwordReg: e.target.value })
+
+}
+
+componentDidMount(){
+  
+}
+loginClickHandler = () => {
+  this.state.username === "" ? this.setState({ usernameRequired: "dispBlock" }) : this.setState({ usernameRequired: "dispNone" });
+  this.state.password === "" ? this.setState({ passwordRequired: "dispBlock" }) : this.setState({ passwordRequired: "dispNone" });
+  this.state.loginErrorMsg === "" ? this.setState({ loginError: "dispBlock" }) : this.setState({ loginError: "dispNone"});
+    
+  if (this.state.username === "" || this.state.password === "") { return }
+  let that = this;
+  let dataLogin = null   
+  let xhrLogin = new XMLHttpRequest();
+  xhrLogin.addEventListener("readystatechange", function () {  
+      if (this.readyState === 4) {          
+          let loginResponse = JSON.parse(xhrLogin.response);          
+          if(loginResponse.code === 'ATH-001' || loginResponse.code === 'ATH-002' ){
+            that.setState({loginError : "dispBlock"});
+            that.setState({loginErrorMsg : loginResponse.message});
+          }else{
+            sessionStorage.setItem('uuid', JSON.parse(this.responseText).id);
+            sessionStorage.setItem('access-token', xhrLogin.getResponseHeader('access-token'));
+
+            that.setState({ loggedIn: true });
+            that.closeModalHandler();
+          }
+      }
+  })
+  xhrLogin.open("POST", this.props.baseUrl + "customer/login");
+  xhrLogin.setRequestHeader("Authorization", "Basic " + window.btoa(this.state.username + ":" + this.state.password));
+  xhrLogin.setRequestHeader("Content-Type", "application/json");
+  xhrLogin.setRequestHeader("Cache-Control", "no-cache");
+  xhrLogin.setRequestHeader("Access-Control-Allow-Origin", "*");  
+  xhrLogin.send(dataLogin);
+ 
+}
+checkForm = () => {  
+  this.state.email === "" ? this.setState({ emailRequired: "dispBlock" }) : this.setState({ emailRequired: "dispNone" });  
+  this.state.firstname === "" ? this.setState({ firstnameRequired: "dispBlock" }) : this.setState({ firstnameRequired: "dispNone" });
+  this.state.lastname === "" ? this.setState({ lastnameRequired: "dispBlock" }) : this.setState({ lastnameRequired: "dispNone" });
+  this.state.mobile === "" ? this.setState({ mobileRequired: "dispBlock" }) : this.setState({ mobileRequired: "dispNone" });
+  this.state.passwordReg === "" ? this.setState({ passwordRegRequired: "dispBlock" }) : this.setState({ passwordRegRequired: "dispNone" });      
+  if (this.state.email === "" || this.state.firstname === "" || this.state.lastname === "" || this.state.mobile === "" || this.state.passwordReg === "") {return;}      
+{/*var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+  var emailRegex = new RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+  emailRegex.test(this.state.email) === false ? this.setState({formValid:false, emailRequired: "dispBlock", emailMsg : "Invalid eMail"}) : this.setState({ emailRequired: "dispNone", formValid : true });
+strongRegex.test(this.state.passwordReg) === false ? this.setState({formValid:false , passwordRegRequired: "dispBlock", passwordMsg : "Weak Password"}) : this.setState({ passwordRegRequired: "dispNone", formValid : true });  */}
+}
+registerClickHandler = () => {    
+    let that = this;
+    let dataSignUp = JSON.stringify({    
+          "contact_number": this.state.mobile,
+          "email_address": this.state.email,
+          "first_name": this.state.firstname,
+          "last_name": this.state.lastname,
+          "password": this.state.passwordReg
+    })
+        
+    let xhrSignup = new XMLHttpRequest();
+    xhrSignup.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {            
+            let signupResponse = JSON.parse(this.response);
+            if(signupResponse.code === 'SGR-001' 
+              || signupResponse.code === 'SGR-002' 
+              || signupResponse.code === 'SGR-003' 
+              || signupResponse.code === 'SGR-004'){
+              that.setState({signupError : "dispBlock"});
+              that.setState({"signUpErrorMsg":signupResponse.message});            
+            }else{
+              that.setState({ registrationSuccess: true });
+              that.openMessageHandler();
+              that.closeModalHandler();
+            }
+        }
+    })
+
+    xhrSignup.open("POST", this.props.baseUrl + "customer/signup");
+    xhrSignup.setRequestHeader("Content-Type", "application/json");
+    xhrSignup.setRequestHeader("Cache-Control", "no-cache");
+    xhrSignup.setRequestHeader("Access-Control-Allow-Origin", "*");  
+    xhrSignup.send(dataSignUp);  
+}
+
+openModalHandler = () => {
+  this.setState({ modalIsOpen: true })
+}
+
+closeModalHandler = () => {
+  this.setState({ modalIsOpen: false })
+}
+
+tabChangeHandler = (event, value) => {
+  this.setState({ value });
+}
+openMessageHandler = () => {
+  this.setState({snackBarOpen:true})  
+}
+
+profileIconClickHandler = (e) => {
+  this.setState({
+    showUserProfileDropDown: !this.state.showUserProfileDropDown,
+    anchorEl:e.currentTarget
+  });
 };
 
-/**
- * Class component for the header
- * @class Header
- * @extends {Component}
- */
-class Header extends Component {
+handleClose = () => {
+  this.setState({
+    open:false,
+    showUserProfileDropDown: !this.state.showUserProfileDropDown
+  })
+}
 
-    constructor() {
-        super();
+handleSnackBarClose = (event, reason) => {
+  if (reason === 'clickaway') {
+    return;
+  }
+  this.setState({snackBarOpen:false})
+}
 
-        this.openModalHandler = this.openModalHandler.bind(this);
-        this.closeModalHandler = this.closeModalHandler.bind(this);
-        this.tabChangeHandler = this.tabChangeHandler.bind(this);
-        this.inputContactnoChangeHandler = this.inputContactnoChangeHandler.bind(this);
-        this.inputLoginPasswordChangeHandler = this.inputLoginPasswordChangeHandler.bind(this);
-        this.loginSignedupCustomer = this.loginSignedupCustomer.bind(this);
-        this.inputFirstNameChangeHandler = this.inputFirstNameChangeHandler.bind(this);
-        this.inputLastNameChangeHandler = this.inputLastNameChangeHandler.bind(this);
-        this.inputEmailChangeHandler = this.inputEmailChangeHandler.bind(this);
-        this.inputRegisterPasswordChangeHandler = this.inputRegisterPasswordChangeHandler.bind(this);
-        this.inputContactChangeHandler = this.inputContactChangeHandler.bind(this);
-        this.signupNewCustomer = this.signupNewCustomer.bind(this);
-        this.logoutClickHandler = this.logoutClickHandler.bind(this);
-        this.openUserProfileHandler = this.openUserProfileHandler.bind(this);
+logoutClickHandler = () => {
+  sessionStorage.clear();  
+  this.props.history.push({
+    pathname: "/"
+  });
+};
+
+render(){  
+    const { classes } = this.props;
+    let logoToRender = null;
+    logoToRender = (
+      <Fastfood className={classes.icon}/>
+    )
+        
+    let logoutBtnToRender = null;
     
-    }
-    state = {
-        loginFormUserValues: {
-            // object containing values entered by the user in the text fields of the login form
-            contactno: "",
-            loginPassword: ""
-        },
-        loginFormValidationClassNames: {
-            // object containing the classnames for the validation messages displayed below the text fields of the login form
-            contactno: Constants.DisplayClassname.DISPLAY_NONE,
-            loginPassword: Constants.DisplayClassname.DISPLAY_NONE
-        },
-        loginErrorMsg: "", // error message displayed for wrong credentials in the login form 
-        signupFormUserValues: {
-            contact: "",
-            email: "",
-            firstname: "",
-            lastname: "",
-            registerPassword: "",
-        },
-        signupFormValidationClassNames: {
-            // object containing the classnames for the validation messages displayed below the text fields of the signup form
-            contact: Constants.DisplayClassname.DISPLAY_NONE,
-            email: Constants.DisplayClassname.DISPLAY_NONE,
-            firstname: Constants.DisplayClassname.DISPLAY_NONE,
-            registerPassword: Constants.DisplayClassname.DISPLAY_NONE
-        },
-        modalIsOpen: false,//login modal state is closed
-        value: 0,//Initial value for tab container is set to '0'
-        signupSuccess: false,//signup status is false
-        loginSnackBarIsOpen: false,
-        registerSnackBarIsOpen: false,
-        showUserProfileDropDown: false, // boolean value indicating if the user profile dropdown is open; TRUE for open and FALSE for closed
-        loggedIn: sessionStorage.getItem("access-token") == null ? false : true,//Logged in status is null if there is no accesstoken in sessionstorage
-        loggedInUserInfo:[],
-        signupFailStatus: [],
-        
-       
-           
     
-    };
-
-    /**
-    * Event handler called when the login button inside the header is clicked to open the login and signup modal
-    * @memberof Header
-    */
-    openModalHandler = () => { this.setState({ modalIsOpen: true });}
-
-    /**
-    * Event handler called when the user clicks outside the modal or intends to close the modal 
-    * @memberof Header
-    */
-    closeModalHandler = () => {this.setState({ modalIsOpen: false });}
-
-    /**
-    * Event handler called when the user tries to navigate to different tabs
-    * @memberof Header
-    */
-    tabChangeHandler = (event, value) => {this.setState({ value });}
-
-    /**
-    * Event handler called when the contactno text field is changed by the user in Login form
-    * @param event defualt parameter for onChange
-    * @memberof Header (Login/Signup modal)
-    */
-    inputContactnoChangeHandler = event => {
-        let currentLoginFormValues = { ...this.state.loginFormUserValues };
-        currentLoginFormValues.contactno = event.target.value;
-        this.setState({ loginFormUserValues: currentLoginFormValues });
-    };
-
-    /**
-    * Event handler called when the password text field is changed by the user in Login form
-    * @param event defualt parameter for onChange
-    * @memberof Header (Login/Signup modal)
-    */
-    inputLoginPasswordChangeHandler = event => {
-        let currentLoginFormValues = { ...this.state.loginFormUserValues };
-        currentLoginFormValues.loginPassword = event.target.value;
-        this.setState({ loginFormUserValues: currentLoginFormValues });
-    };
-
-    /**
-   * Event handler called when the firstname text field is changed by the user in Signup form
-   * @param event defualt parameter for onChange
-   * @memberof Header (Login/Signup modal)
-   */
-    inputFirstNameChangeHandler = event => {
-        let currentSignupFormValues = { ...this.state.signupFormUserValues };
-        currentSignupFormValues.firstname = event.target.value;
-        this.setState({ signupFormUserValues: currentSignupFormValues });
-    };
-
-    /**
-    * Event handler called when the lastname text field is changed by the user in Signup form
-    * @param event defualt parameter for onChange
-    * @memberof Header (Login/Signup modal)
-    */
-    inputLastNameChangeHandler = event => {
-        let currentSignupFormValues = { ...this.state.signupFormUserValues };
-        currentSignupFormValues.lastname = event.target.value;
-        this.setState({ signupFormUserValues: currentSignupFormValues });
-    };
-
-    /**
-    * Event handler called when the email text field is changed by the user in Signup form
-    * @param event defualt parameter for onChange
-    * @memberof Header (Login/Signup modal)
-    */
-    inputEmailChangeHandler = event => {
-        let currentSignupFormValues = { ...this.state.signupFormUserValues };
-        currentSignupFormValues.email = event.target.value;
-        this.setState({ signupFormUserValues: currentSignupFormValues });
-    };
-
-    /**
-    * Event handler called when the password text field is changed by the user in Signup form
-    * @param event defualt parameter for onChange
-    * @memberof Header (Login/Signup modal)
-    */
-    inputRegisterPasswordChangeHandler = event => {
-        let currentSignupFormValues = { ...this.state.signupFormUserValues };
-        currentSignupFormValues.registerPassword = event.target.value;
-        this.setState({ signupFormUserValues: currentSignupFormValues });
-    };
-
-    /**
-    * Event handler called when the contact text field is changed by the user in Signup form
-    * @param event defualt parameter for onChange
-    * @memberof Header (Login/Signup modal)
-    */
-    inputContactChangeHandler = event => {
-        let currentSignupFormValues = { ...this.state.signupFormUserValues };
-        currentSignupFormValues.contact = event.target.value;
-        this.setState({ signupFormUserValues: currentSignupFormValues });
-    };
-
-    /**
-   * Event handler called when the user clicks on the login button in Login modal
-   * @param event defualt parameter for onClick
-   * @memberof Header (Login modal)
-   */
-    loginSignedupCustomer = () => {
-
-        // clearing the error message; based on the validation of user input values
-        this.setState({
-            loginErrorMsg: ""
-        });
-
-        // finding the class names for the contactno and password validation messages - to be displayed or not
-        let contactno_validation_classname = UtilsUI.findValidationMessageClassname(
-            this.state.loginFormUserValues.contactno,
-            Constants.ValueTypeEnum.FORM_FIELD
-        );
-        let loginPassword_validation_classname = UtilsUI.findValidationMessageClassname(
-            this.state.loginFormUserValues.loginPassword,
-            Constants.ValueTypeEnum.FORM_FIELD
-        );
-
-        // setting the class names for the contactno and password validation messages - to be displayed or not
-        let currentLoginFormValidationClassNames = {
-            ...this.state.loginFormValidationClassNames
-        };
-        currentLoginFormValidationClassNames.contactno = contactno_validation_classname;
-        currentLoginFormValidationClassNames.loginPassword = loginPassword_validation_classname;
-        this.setState({
-            loginFormValidationClassNames: currentLoginFormValidationClassNames,
-        });
-        
-        
-            
-        let dataLogin = null;
-        let xhrLogin = new XMLHttpRequest();
-        let that = this;
-        xhrLogin.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                if (xhrLogin.status === 200 || xhrLogin.status === 201){
-                sessionStorage.setItem("uuid", JSON.parse(this.responseText).id);
-                sessionStorage.setItem("access-token", xhrLogin.getResponseHeader("access-token"));
-
-                that.setState({
-                    loggedIn: true,
-                    loginSnackBarIsOpen: true,
-                    
-                });
-
-                that.closeModalHandler();
-
-            }
-        }
-        });
-
-        xhrLogin.open("POST", "http://localhost:8080/api/customer/login");
-        xhrLogin.setRequestHeader("Authorization", "Basic " + window.btoa(this.state.loginFormUserValues.contactno + ":" + this.state.loginFormUserValues.loginPassword));
-        xhrLogin.setRequestHeader("Content-Type", "application/json");
-        xhrLogin.setRequestHeader("Cache-Control", "no-cache");
-        xhrLogin.send(dataLogin);
-
-           
-        };
-
-    /**
-   * Event handler called when the user clicks on the signup button in Signup modal
-   * @param event defualt parameter for onClick
-   * @memberof Header (Signup modal)
-   */
-    signupNewCustomer = () => {
-
-        // clearing the error message; based on the validation of user input values
-        this.setState({
-            signupErrorMsg: "",
-
-        });
-
-        // finding the class names for the contactno,email, firstname and password validation messages - to be displayed or not
-        let contact_validation_classname = UtilsUI.findValidationMessageClassname(
-            this.state.signupFormUserValues.contact,
-            Constants.ValueTypeEnum.FORM_FIELD
-        );
-        let email_validation_classname = UtilsUI.findValidationMessageClassname(
-            this.state.signupFormUserValues.email,
-            Constants.ValueTypeEnum.FORM_FIELD
-        );
-        let firstname_validation_classname = UtilsUI.findValidationMessageClassname(
-            this.state.signupFormUserValues.firstname,
-            Constants.ValueTypeEnum.FORM_FIELD
-        );
-        let registerPassword_validation_classname = UtilsUI.findValidationMessageClassname(
-            this.state.signupFormUserValues.registerPassword,
-            Constants.ValueTypeEnum.FORM_FIELD
-        );
-
-        // setting the class names for the contactno,email, firstname and password validation messages - to be displayed or not
-        let currentSignupFormValidationClassNames = { ...this.state.signupFormValidationClassNames };
-        currentSignupFormValidationClassNames.contact = contact_validation_classname;
-        currentSignupFormValidationClassNames.email = email_validation_classname;
-        currentSignupFormValidationClassNames.firstname = firstname_validation_classname;
-        currentSignupFormValidationClassNames.registerPassword = registerPassword_validation_classname;
-
-        this.setState({
-            signupFormValidationClassNames: currentSignupFormValidationClassNames,
-            
-        });
-
-        /* (this.state.signupFormUserValues.contact.length!==10)
-         ? this.setState({ signupErrorMsg:Constants.VALIDATE_CONTACT_ERROR_MSG})
-         : this.setState({ signupErrorMsg:null});*/
-        
-        let dataSignup = JSON.stringify({
-            "contact_number": this.state.signupFormUserValues.contact,
-            "email_address": this.state.signupFormUserValues.email,
-            "first_name": this.state.signupFormUserValues.firstname,
-            "last_name": this.state.signupFormUserValues.lastname,
-            "password": this.state.signupFormUserValues.registerPassword
-        });
-
-        let xhrSignup = new XMLHttpRequest();
-        let that = this;
-        xhrSignup.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                if (xhrSignup.status === 200 || xhrSignup.status === 201){
-                that.setState({
-                    signupSuccess: true,
-                    registerSnackBarIsOpen: true
-                });
-            }
-            /*else{
-                
-               that.setState({
-                signupFailStatus: JSON.parse(this.responseText)
-             });
-
-            }*/
-        }
-        });
-
-        xhrSignup.open("POST", "http://localhost:8080/api/customer/signup");
-        xhrSignup.setRequestHeader("Content-Type", "application/json");
-        xhrSignup.setRequestHeader("Cache-Control", "no-cache");
-        xhrSignup.send(dataSignup);
-        //console.log(this.state.signupFailStatus.message);
-    };
-    /* CHECK => why responseText shows diabled , n why snack bar doesnt open on successful signup*/
-    
-    loginSnackBarCloseHandler = (e) => {
-        this.setState({ loginSnackBarIsOpen: false });
-    }
-    registerSnackBarCloseHandler = (e) => {
-        this.setState({ registerSnackBarIsOpen: false });
-    }
-    searchValueChangeHandler = (e) => {
-        this.setState({ searchValue: e.target.value });
-    }
-
-    /**
-      * Event handler called when the profile icon inside the header is clicked to toggle the user profile dropdown
-      * @memberof Header
-      */
-    openUserProfileHandler = () => {
-        this.setState({
-            showUserProfileDropDown: !this.state.showUserProfileDropDown
-        });
-    };
-
-    /**
-     * Event handler called when the logout menu item is clicked inside the user profile dropdown to log a user out of the application
-     * @memberof Header
-     */
-    logoutClickHandler = () => {
-        sessionStorage.removeItem("access-token");
-        sessionStorage.removeItem("user-details");
-        this.props.history.push({
-            pathname: "/"
-        });
-    };
-
-
-    /**
-  * Function called when the component is rendered
-  * @memberof Header
-  */
-    render() {
-        const { classes } = this.props;
-
-        // logo to be rendered inside the header
-        let logoToRender = null;
-        if (this.props.showLogo) {
-            logoToRender = (
-                <div className="fastfood-icon-container">
-                    <FastFoodIcon />
-                </div>
-            );
-        }
-
-        // search box to be rendered inside the header
-        let searchBoxToRender = null;
-        if (this.props.showSearchBox) {
-            searchBoxToRender = (
-                <div className="search-icon-container">
-                    <div className="search-icon">
-                        <SearchIcon />
-                    </div>
-                    <div className="search-text-input">
-                        <Input
-                            onChange={this.searchValueChangeHandler}
-                           className={classes.searchInput}
-                            //onClick={this.UnderLineColourChangeHandler}
-                            placeholder="Search by Restaurant Name" id="search-input" fullWidth />
-                    </div>
-                </div>
-            );
-        }
-
-        //login button and modal component  to be rendered inside the header
-        let loginButtonModalToRender = null;
-        if (this.props.showLoginModal) {
-            loginButtonModalToRender = (
-                <div className="header-login-btn-container">
-                    <Button variant="contained" color="default" onClick={this.openModalHandler} >
-                        <img src={accountCircle} className="accountCircle-logo" alt="accountCircle" />Login</Button>
-                    <Modal
-                        ariaHideApp={false}
-                        isOpen={this.state.modalIsOpen}
-                        contentLabel="Login"
-                        onRequestClose={this.closeModalHandler}
-                        style={customStyles}
+    return (    
+        <div>
+          <div className="header-main-container">
+            <div className="header-logo-container">{logoToRender}</div>
+            {this.props.showSearch &&
+              <div className="header-search-container">
+                <div className="search-icon">
+                <SearchIcon style={{color:"#FFFFFF"}}/>
+              </div>          
+              <Input
+                onChange={this.props.searchRestaurantsByName.bind(this)}
+                className={classes.searchInput}
+                placeholder="Search by restaurant name"            
+              />
+            </div>
+            }                        
+            {!this.state.loggedIn ?
+              <div className="login-button">
+                  <Button variant="contained" color="default" onClick={this.openModalHandler}><AccountCircle />Login</Button>
+              </div>
+              :
+              <div className="login-button">                  
+                  <Button variant="contained" color="default" onClick={this.profileIconClickHandler}><AccountCircle /> {this.state.firstname}</Button>
+                  {this.state.showUserProfileDropDown ? (
+                      <Popper open={this.state.open} anchorEl={this.state.anchorEl} keepMounted transition disablePortal>
+                        <Paper className={classes.paper}>
+                          <ClickAwayListener onClickAway={this.handleClose}>
+                              <MenuList>
+                                <MenuItem onClick={this.handleClose}><Link to="/profile" style={{ textDecoration: 'none',color:"black" }}>My Profile</Link></MenuItem>
+                                <MenuItem onClick={this.logoutClickHandler}>Logout</MenuItem>
+                              </MenuList>
+                          </ClickAwayListener>
+                        </Paper>
+                      </Popper>
+                  ) : null}                  
+              </div>}                  
+          </div>
+          <Modal
+                    ariaHideApp={false}
+                    isOpen={this.state.modalIsOpen}
+                    contentLabel="Login"
+                    onRequestClose={this.closeModalHandler}
+                    style={customStyles}>
+                    <Tabs className="tabs" value={this.state.value} onChange={this.tabChangeHandler}>
+                        <Tab label="Login" />
+                        <Tab label="Register" />
+                    </Tabs>
+                    {this.state.value === 0 &&
+                        <TabContainer>
+                        
+                            <FormControl required className={classes.formControl}>
+                                <InputLabel htmlFor="username"> Contact No. </InputLabel>
+                                <Input id="username" type="text" username={this.state.username} onChange={this.inputUsernameChangeHandler} />
+                                <FormHelperText className={this.state.usernameRequired}><span className="red">required</span></FormHelperText>
+                            </FormControl><br /><br />
+                            <FormControl required className={classes.formControl}>
+                                <InputLabel htmlFor="password"> Password </InputLabel>
+                                <Input id="password" type="password" onChange={this.inputPasswordChangeHandler} />
+                                <FormHelperText className={this.state.passwordRequired}><span className="red">required</span></FormHelperText>
+                                <Typography variant="subtitle1" color="error" className={this.state.loginError} align="left">{this.state.loginErrorMsg}</Typography>                                
+                            </FormControl><br /><br />
+                            <Button variant="contained" color="primary" onClick={this.loginClickHandler} className={classes.formControl}>LOGIN</Button>
+                        </TabContainer>}
+                    {this.state.value === 1 && <TabContainer>                       
+                      <form>
+                        <FormControl required className={classes.formControl}>
+                            <InputLabel htmlFor="firstname">First Name</InputLabel>
+                            <Input id="firstname" type="text" onChange={this.inputFirstnameChangeHandler}  value={this.state.firstname}/>
+                            <FormHelperText className={this.state.firstnameRequired}><span className="red">required</span></FormHelperText>
+                        </FormControl><br /><br />
+                        <FormControl required className={classes.formControl}>
+                            <InputLabel htmlFor="lastname">Last Name</InputLabel>
+                            <Input id="lastname" type="text" onChange={this.inputLastnameChangeHandler} value={this.state.lastname}/>
+                            <FormHelperText className={this.state.lastnameRequired}><span className="red">required</span></FormHelperText>
+                        </FormControl><br /><br />
+                        <FormControl required className={classes.formControl}>
+                            <InputLabel htmlFor="email">Email</InputLabel>
+                            <Input id="email" type="email" onChange={this.inputEmailChangeHandler} value={this.state.email}/>
+                            <FormHelperText className={this.state.emailRequired}><span className="red">required valid email</span></FormHelperText>
+                        </FormControl><br /><br />
+                        <FormControl required className={classes.formControl}>
+                            <InputLabel htmlFor="mobile">Mobile Number</InputLabel>
+                            <Input id="mobile" type="number" onChange={this.inputMobileChangeHandler} value={this.state.mobile}/>
+                            <FormHelperText className={this.state.mobileRequired}><span className="red">required</span></FormHelperText>
+                        </FormControl><br /><br />
+                        <FormControl required aria-describedby="name-helper-text" className={classes.formControl}>
+                            <InputLabel htmlFor="passwordReg">Password</InputLabel>
+                            <Input type="password" id="passwordReg" onChange={this.inputPasswordRegChangeHandler}/>
+                            <FormHelperText className={this.state.passwordRegRequired}><span className="red">required strong password</span></FormHelperText>
+                        </FormControl><br /><br />
+                        {this.state.registrationSuccess === false &&
+                            <FormControl className={classes.formControl}>
+                              <Typography variant="subtitle1" color="error" className={this.state.signupError} align="left">{this.state.signUpErrorMsg}</Typography>                                                              
+                            </FormControl>}<br /><br />
+                        {/*this.state.registrationSuccess === true &&
+                            <FormControl className={classes.formControl}>
+                                <span className="successText"> Registration Successful. Please Login!</span>
+                            </FormControl><br /><br />*/}
+                        <Button variant="contained" color="primary" onClick={this.registerClickHandler} className={classes.formControl}>
+                            REGISTER
+                        </Button>
+                        </form>
+                    </TabContainer>}
+                </Modal>
+                <Snackbar
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  open={this.state.snackBarOpen}
+                  autoHideDuration={6000}
+                  onClose={this.handleSnackBarClose}
+                  ContentProps={{
+                    'aria-describedby': 'message-id',
+                  }}
+                  message={<span id="message-id">Registration Successful. Please Login!</span>}
+                  action={[              
+                    <IconButton
+                      key="close"
+                      aria-label="Close"
+                      color="inherit"
+                      className={classes.close}
+                      onClick={this.handleSnackBarClose}
                     >
-                        <Tabs className="tabs" value={this.state.value} onChange={this.tabChangeHandler}>
-                            <Tab label="Login" />
-                            <Tab label="Signup" />
-                        </Tabs>
-
-                        {this.state.value === 0 &&
-                            <TabContainer>
-                                <FormControl required>
-                                    <InputLabel htmlFor="contactno">Contact No</InputLabel>
-                                    <Input id="contactno" type="text" contactno={this.state.contactno} onChange={this.inputContactnoChangeHandler} />
-                                    <FormHelperText className={this.state.loginFormValidationClassNames.contactno}>
-                                        <span className="red">required</span>
-                                    </FormHelperText>
-                                </FormControl>
-                                <br /><br />
-                                <FormControl required>
-                                    <InputLabel htmlFor="loginPassword">Password</InputLabel>
-                                    <Input id="loginPassword" type="password" loginpassword={this.state.loginPassword} onChange={this.inputLoginPasswordChangeHandler} />
-                                    <FormHelperText className={this.state.loginFormValidationClassNames.loginPassword}>
-                                        <span className="red">required</span>
-                                    </FormHelperText>
-                                </FormControl>
-                                <br /><br />
-                                <Button variant="contained" color="primary" onClick={this.loginSignedupCustomer}>LOGIN</Button>
-                                
-                            </TabContainer>
-                        }
-
-                        {this.state.value === 1 &&
-                            <TabContainer>
-                                <FormControl required>
-                                    <InputLabel htmlFor="firstname">First Name</InputLabel>
-                                    <Input id="firstname" type="text" firstname={this.state.firstname} onChange={this.inputFirstNameChangeHandler} />
-                                    <FormHelperText className={this.state.signupFormValidationClassNames.firstname}>
-                                        <span className="red">required</span>
-                                    </FormHelperText>
-                                </FormControl>
-                                <br /><br />
-                                <FormControl >
-                                    <InputLabel htmlFor="lastname">Last Name</InputLabel>
-                                    <Input id="lastname" type="text" lastname={this.state.lastname} onChange={this.inputLastNameChangeHandler} />
-                                </FormControl>
-                                <br /><br />
-                                <FormControl required>
-                                    <InputLabel htmlFor="email">Email</InputLabel>
-                                    <Input id="email" type="text" email={this.state.email} onChange={this.inputEmailChangeHandler} />
-                                    <FormHelperText className={this.state.signupFormValidationClassNames.email}>
-                                        <span className="red">required</span>
-                                    </FormHelperText>
-
-                                </FormControl>
-                                <br /><br />
-                                <FormControl required>
-                                    <InputLabel htmlFor="registerPassword">Password</InputLabel>
-                                    <Input id="registerPassword" type="password" registerpassword={this.state.registerPassword} onChange={this.inputRegisterPasswordChangeHandler} />
-                                    <FormHelperText className={this.state.signupFormValidationClassNames.registerPassword}>
-                                        <span className="red">required</span>
-                                    </FormHelperText>
-                                </FormControl>
-                                <br /><br />
-                                <FormControl required>
-                                    <InputLabel htmlFor="contact">Contact No.</InputLabel>
-                                    <Input id="contact" type="text" contact={this.state.contact} onChange={this.inputContactChangeHandler} />
-                                    <FormHelperText className={this.state.signupFormValidationClassNames.contact}>
-                                        <span className="red">required</span>
-                                    </FormHelperText>
-
-                                </FormControl>
-                                <br /><br />
-                                <Button variant="contained" color="primary" onClick={this.signupNewCustomer}>SIGNUP</Button>
-                            </TabContainer>
-                        }
-                    </Modal>
-                </div>
-            );
-        }
-
-        // user profile icon to be rendered inside the header
-        let profileIconButtonToRender = null;
-        if (this.props.showProfile) {
-            profileIconButtonToRender = (
-                <div className="header-user-profile-container">
-                    <div id="user-profile" onClick={this.openUserProfileHandler}><div><img src={accountCircle} className="accountCircle-logo" alt="accountCircle" /></div><div id="user-right">{sessionStorage.getItem("user-details")}</div></div>
-
-                    {this.state.showUserProfileDropDown ? (
-                        <div className="user-profile-drop-down">
-                            {this.props.enableMyAccount ? (
-                                <div>
-                                    <Link to="/profile" className="my-account-dropdown-menu-item">
-                                        My Account
-                      </Link>
-                                    <hr />
-                                </div>
-                            ) : null}
-                            <div
-                                onClick={this.logoutClickHandler}
-                                className="logout-dropdown-menu-item"
-                            >
-                                Logout
-                  </div>
-                        </div>
-                    ) : null}
-                </div>
-            );
-        }
-
-         //loginsnackbar component to be rendered upon successful login
-         let loginSnackBarToRender = null;
-         if (this.state.loginSnackBarIsOpen) {
-             loginSnackBarToRender = (
-                <Snackbar
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-                open={this.state.loginSnackBarIsOpen}
-                autoHideDuration={3000}
-                onClose={this.loginSnackBarCloseHandler}
-                ContentProps={{ 'aria-describedby': 'message-id', }}
-                message={<span id="message-id">Logged in successfully!</span>}
+                      <CloseIcon />
+                    </IconButton>,
+                  ]}
                 />
-             );
-         }
-
-        //registersnackbar component to be rendered upon successful signup
-        let registerSnackBarToRender = null;
-        if (this.state.registerSnackBarIsOpen) {
-            registerSnackBarToRender = (
-                <Snackbar
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-                    open={this.state.registerSnackBarIsOpen}
-                    autoHideDuration={3000}
-                    onClose={this.registerSnackBarCloseHandler}
-                    ContentProps={{ 'aria-describedby': 'message-id', }}
-                    message={<span id="message-id">Registered successfully! Please login now!</span>}
-                    />
-            );
-        }
-
-        return (
-            <MuiThemeProvider>
-                <div className="header-main-container">
-                    <div className="header-logo-container">{logoToRender}</div>
-                    {searchBoxToRender}
-                    {loginButtonModalToRender}
-                    {profileIconButtonToRender}
-                    {loginSnackBarToRender}
-                    {registerSnackBarToRender}    
-                </div>    
-            </MuiThemeProvider>
-        );
-
-    }
+        </div>        
+    );
+  }
 }
-
-Header.propTypes = {
-    classes: PropTypes.object.isRequired
-};
-
 export default withStyles(styles)(Header);

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import Home from "../screens/home/Home";
-import Profile from "../screens/profile/Profile";
-import Details from "../screens/details/Details";
-//import Checkout from "../screens/checkout/Checkout";
+import Checkout from "../screens/checkout/Checkout"
+import Details from "../screens/details/Details"
+import Profile from "../screens/profile/Profile"
 
 /**
  * Class component for controller
@@ -11,13 +11,9 @@ import Details from "../screens/details/Details";
  * @extends {Component}
  */
 class Controller extends Component {
-  constructor() {
-    super();
-    this.state = {
-        loggedIn: sessionStorage.getItem("access-token") == null ? false : true
-    }
-    this.baseUrl = "http://localhost:8080/api";
-}
+  //will be replaced with actual url
+  baseUrl = "http://localhost:8080/api/";
+
   render() {
     return (
       <Router>
@@ -28,17 +24,20 @@ class Controller extends Component {
             render={props => <Home {...props} baseUrl={this.baseUrl} />}
           />
           <Route
+            exact
             path="/restaurant/:id"
             render={props => <Details {...props} baseUrl={this.baseUrl} />}
-          />
+          />                    
           <Route
+            exact
             path="/checkout"
-            render={props =>this.state.loggedIn ? (<Redirect to='/' />) : (<Redirect to='/' />)} 
+            render={props => <Checkout {...props} baseUrl={this.baseUrl} />}
           />
           <Route
+            exact
             path="/profile"
             render={props => <Profile {...props} baseUrl={this.baseUrl} />}
-          />  
+          />          
         </div>
       </Router>
     );
